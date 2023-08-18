@@ -85,9 +85,8 @@ def start(message):
     reply_markup=start_keyboard
   )
 
-@bot.message_handler(func=lambda msg: msg.text == "🏁 START")  
+@bot.message_handler(func=lambda message: message.text == "🏁 START")  
 def show_menu(message):
-
   bot.send_message(message.chat.id, "Choose an Option:",  
                     reply_markup=menu_keyboard)
 
@@ -232,16 +231,17 @@ def process_deluser_step(message):
 
 
 # Command: /lockuser
-@bot.message_handler(commands=['lockuser'])
+@bot.message_handler(func=lambda message: message.text == "🔒 Lock User")
 @authorized_only
 def lock_user(message):
-    msg = bot.send_message(message.chat.id, "Enter the username (type 'cancel' to abort):")
+    msg = bot.send_message(message.chat.id, "Enter the Username:",  
+                         reply_markup=cancel_keyboard)
     bot.register_next_step_handler(msg, process_lockuser_step)
 
 def process_lockuser_step(message):
-    if message.text.lower() == "cancel":
-        bot.send_message(message.chat.id, "Lock user operation canceled.")
-        return
+    if message.text == "🚫 Cancel":  
+     bot.send_message(message.chat.id, "🚫 User Locking Operation Canceled!", reply_markup=menu_keyboard)
+     return
 
     username = message.text.lower()
 
@@ -252,7 +252,7 @@ def process_lockuser_step(message):
     user_status = cursor.fetchone()
 
     if user_status and user_status[0] == 'deactive':
-        bot.send_message(message.chat.id, "User is already locked.")
+        bot.send_message(message.chat.id, "User is already Locked.")
     else:
         # Disconnect the user from ocserv
         subprocess.run(['sudo', 'occtl', 'disconnect', 'user', username])
@@ -266,20 +266,25 @@ def process_lockuser_step(message):
         cursor.execute(query_update, values_update)
         db.commit()
 
-        bot.send_message(message.chat.id, "User locked successfully!")
+        bold_username = f"<b>\"{username}\"</b>"
+        bot.send_message(message.chat.id,
+                        f"🔒 User {bold_username} Locked Successfully!",
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=menu_keyboard)
 
 
 # Command: /unlockuser
-@bot.message_handler(commands=['unlockuser'])
+@bot.message_handler(func=lambda message: message.text == "🔓 Unlock User")
 @authorized_only
 def unlock_user(message):
-    msg = bot.send_message(message.chat.id, "Enter the username (type 'cancel' to abort):")
+    msg = bot.send_message(message.chat.id, "Enter the Username:",  
+                         reply_markup=cancel_keyboard)
     bot.register_next_step_handler(msg, process_unlockuser_step)
 
 def process_unlockuser_step(message):
-    if message.text.lower() == "cancel":
-        bot.send_message(message.chat.id, "Unlock user operation canceled.")
-        return
+    if message.text == "🚫 Cancel":  
+     bot.send_message(message.chat.id, "🚫 User UnLocking Operation Canceled!", reply_markup=menu_keyboard)
+     return
 
     username = message.text.lower()
 
@@ -290,7 +295,7 @@ def process_unlockuser_step(message):
     user_status = cursor.fetchone()
 
     if user_status and user_status[0] == 'active':
-        bot.send_message(message.chat.id, "User is already unlocked.")
+        bot.send_message(message.chat.id, "User is already UnLocked.")
     else:
         # Unlock the user in ocserv
         subprocess.run(['sudo', 'ocpasswd', '-u', username])
@@ -301,7 +306,11 @@ def process_unlockuser_step(message):
         cursor.execute(query_update, values_update)
         db.commit()
 
-        bot.send_message(message.chat.id, "User unlocked successfully!")
+        bold_username = f"<b>\"{username}\"</b>"
+        bot.send_message(message.chat.id,
+                        f"🔓 User {bold_username} UnLocked Successfully!",
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=menu_keyboard) 
 
 
 # Command: /onlineusers
