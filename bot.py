@@ -37,7 +37,10 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor()
 
-from telebot import types
+start_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+start_button = types.KeyboardButton('🏁 START')
+start_keyboard.add(start_button)
+
 
 button1 = types.KeyboardButton('🙋🏻‍♂️ Add User') 
 button2 = types.KeyboardButton('😔 Delete User')
@@ -72,9 +75,15 @@ def start(message):
 
   bot.send_message(
     message.chat.id,
-    "Welcome to AliNet Bot! Please choose an action:",
-    reply_markup=menu
+    "Welcome to AliNet Bot!",
+    reply_markup=start_keyboard
   )
+
+@bot.message_handler(func=lambda msg: msg.text == "🏁 START")  
+def show_menu(message):
+
+  bot.send_message(message.chat.id, "Choose option:",  
+                    reply_markup=menu)
 
 
 # Decorator function to check user authorization
