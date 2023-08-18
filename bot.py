@@ -11,7 +11,7 @@ import threading
 from dotenv import load_dotenv
 import functools
 from telebot import types
-
+from telegram import ParseMode
 
 # Load environment variables from .env file
 load_dotenv()
@@ -180,8 +180,15 @@ def process_days_or_date_step(message, username, password):
     cursor.execute(query, values)
     db.commit()
 
-    bot.send_message(message.chat.id, "✅ User Added Successfully!",  
-                   reply_markup=menu_keyboard)
+    bold_username = f"<b>\"{username}\"</b>"
+    bold_password = f"<b>\"{password}\"</b>"  
+    bold_expire = f"<b>\"{expire_date}\"</b>"
+    message = bot.send_message(message.chat.id,
+                            f"✅ User {bold_username} Added Successfully!\n"
+                            f"Password: {bold_password}\n"
+                            f"Expire Date: {bold_expire}",
+                            parse_mode=ParseMode.HTML,
+                            reply_markup=menu_keyboard)
 
 
 
@@ -189,13 +196,14 @@ def process_days_or_date_step(message, username, password):
 @bot.message_handler(func=lambda message: message.text == "😔 Delete User")
 @authorized_only
 def del_user(message):
-    msg = bot.send_message(message.chat.id, "Enter the Username:")
+    msg = bot.send_message(message.chat.id, "Enter the Username:",  
+                         reply_markup=cancel_keyboard)
     bot.register_next_step_handler(msg, process_deluser_step)
     
 def process_deluser_step(message):
-    if message.text.lower() == "cancel":
-        bot.send_message(message.chat.id, "Delete user operation canceled.")
-        return
+    if message.text == "🚫 Cancel":  
+     bot.send_message(message.chat.id, "User Deletion Operation Canceled!", reply_markup=menu_keyboard)
+     return
 
     username = message.text.lower()
 
@@ -206,7 +214,7 @@ def process_deluser_step(message):
     user_count = cursor.fetchone()[0]
 
     if user_count == 0:
-        bot.send_message(message.chat.id, "User does not exist.")
+        bot.send_message(message.chat.id, "User does not exist.", reply_markup=menu_keyboard)
     else:
         # Remove the user from ocserv
         subprocess.run(['sudo', 'ocpasswd', '-d', username])
@@ -217,7 +225,8 @@ def process_deluser_step(message):
         cursor.execute(query_delete, values_delete)
         db.commit()
 
-        bot.send_message(message.chat.id, "User deleted successfully!")
+        bot.send_message(message.chat.id, "✅ User Deleted Successfully!",  
+                   reply_markup=menu_keyboard)
 
 
 # Command: /lockuser
