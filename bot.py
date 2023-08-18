@@ -73,7 +73,7 @@ def start(message):
   bot.send_message(
     message.chat.id,
     "Welcome to AliNet Bot! Please choose an action:",
-    reply_markup=menu_keyboard
+    reply_markup=menu
   )
 
 
