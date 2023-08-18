@@ -10,6 +10,7 @@ import os
 import threading
 from dotenv import load_dotenv
 import functools
+from telebot import types
 
 
 # Load environment variables from .env file
@@ -36,6 +37,45 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor()
 
+from telebot import types
+
+button1 = types.KeyboardButton('🙋🏻‍♂️ Add User') 
+button2 = types.KeyboardButton('😔 Delete User')
+button3 = types.KeyboardButton('🔒 Lock User')
+button4 = types.KeyboardButton('🔐 Lock Expired')  
+button5 = types.KeyboardButton('🔓 Unlock User')
+button6 = types.KeyboardButton('⌛ Update Expire')
+button7 = types.KeyboardButton('⚙️ Update User')
+button8 = types.KeyboardButton('🔄 Renew User')
+button9 = types.KeyboardButton('🔍 Search User')
+button10 = types.KeyboardButton('🧑 Online Users')
+button11 = types.KeyboardButton('📋 All Users')  
+button12 = types.KeyboardButton('🟢 Active Users')
+button13 = types.KeyboardButton('🔴 Inactive Users')
+button14 = types.KeyboardButton('📦 DB Backup')
+button15 = types.KeyboardButton('📄 Ocpasswd Backup')
+button16 = types.KeyboardButton('⚡ Restart Bot')
+button17 = types.KeyboardButton('⚙️ Settings')
+button18 = types.KeyboardButton('❓ Help')
+button19 = types.KeyboardButton('👋 Exit')
+
+# Create a keyboard with the menu buttons
+menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
+menu.add(button1,button2,button3,button4,button5,button6,button7,button8,button9,
+         button10,button11,button12,button13,button14,button15,button16,button17,
+         button18,button19)
+
+
+# Command: /start
+@bot.message_handler(commands=['start'])
+def start(message):
+
+  bot.send_message(
+    message.chat.id,
+    "Welcome to AliNet Bot! Please choose an action:",
+    reply_markup=menu_keyboard
+  )
+
 
 # Decorator function to check user authorization
 def authorized_only(func):
@@ -49,7 +89,7 @@ def authorized_only(func):
 
 
 # Command: /adduser
-@bot.message_handler(commands=['adduser'])
+@bot.message_handler(func=lambda message: message.text == "Add User")
 @authorized_only
 def add_user(message):
     msg = bot.send_message(message.chat.id, "Enter the username (type 'cancel' to abort):")
