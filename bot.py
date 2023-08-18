@@ -42,13 +42,13 @@ start_button = types.KeyboardButton('🏁 START')
 start_keyboard.add(start_button)
 
 
-button1 = types.KeyboardButton('🙋🏻‍♂️ Add User') 
+button1 = types.KeyboardButton('🙋 Add User') 
 button2 = types.KeyboardButton('😔 Delete User')
 button3 = types.KeyboardButton('🔒 Lock User')
 button4 = types.KeyboardButton('🔐 Lock Expired')  
 button5 = types.KeyboardButton('🔓 Unlock User')
 button6 = types.KeyboardButton('⌛ Update Expire')
-button7 = types.KeyboardButton('⚙️ Update User')
+button7 = types.KeyboardButton('⚙️  Update User')
 button8 = types.KeyboardButton('🔄 Renew User')
 button9 = types.KeyboardButton('🔍 Search User')
 button10 = types.KeyboardButton('🧑 Online Users')
@@ -58,15 +58,14 @@ button13 = types.KeyboardButton('🔴 Inactive Users')
 button14 = types.KeyboardButton('📦 DB Backup')
 button15 = types.KeyboardButton('📄 Ocpasswd Backup')
 button16 = types.KeyboardButton('⚡ Restart Bot')
-button17 = types.KeyboardButton('⚙️ Settings')
-button18 = types.KeyboardButton('❓ Help')
-button19 = types.KeyboardButton('👋 Exit')
+button17 = types.KeyboardButton('❓ Help')
+button18 = types.KeyboardButton('👋 Exit')
 
 # Create a keyboard with the menu buttons
 menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
 menu.add(button1,button2,button3,button4,button5,button6,button7,button8,button9,
          button10,button11,button12,button13,button14,button15,button16,button17,
-         button18,button19)
+         button18)
 
 
 # Command: /start
@@ -97,17 +96,21 @@ def authorized_only(func):
     return wrapper
 
 
+add_user_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+add_user_keyboard.add('Cancel')
+
 # Command: /adduser
-@bot.message_handler(func=lambda message: message.text == "Add User")
+@bot.message_handler(func=lambda message: message.text == "🙋 Add User")
 @authorized_only
 def add_user(message):
-    msg = bot.send_message(message.chat.id, "Enter the username (type 'cancel' to abort):")
+    msg = bot.send_message(message.chat.id, "Enter username",  
+                         reply_markup=add_user_keyboard)
     bot.register_next_step_handler(msg, process_username_step)
     
 def process_username_step(message):
-    if message.text.lower() == "cancel":
-        bot.send_message(message.chat.id, "Add user operation canceled.")
-        return
+    if message.text == "Cancel":  
+     bot.send_message(message.chat.id, "Canceled", reply_markup=menu)
+     return
 
     username = message.text.lower()
 
@@ -118,7 +121,7 @@ def process_username_step(message):
     result = cursor.fetchone()
 
     if result[0] > 0:
-        bot.send_message(message.chat.id, "User already exists.")
+        bot.send_message(message.chat.id, "User already exists.", reply_markup=menu)
         return
 
     # Continue with the process if the username is unique
