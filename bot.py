@@ -25,8 +25,10 @@ DB_NAME = os.getenv("DB_NAME")
 CHANNEL_ID = os.getenv("CHANNEL_ID")
 AUTHORIZED_CHAT_IDS = os.getenv("AUTHORIZED_CHAT_IDS", "").split(",")
 
+
 # Set up the Telegram bot
 bot = telebot.TeleBot(BOT_TOKEN)
+
 
 # Set up the MySQL database connection
 db = mysql.connector.connect(
@@ -37,18 +39,20 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor()
 
-start_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+# Set up the Start keyboard
 start_button = types.KeyboardButton('🏁 START')
+start_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 start_keyboard.add(start_button)
 
-
+# Set up the Menu keyboard
 button1 = types.KeyboardButton('🙋 Add User') 
 button2 = types.KeyboardButton('😔 Delete User')
 button3 = types.KeyboardButton('🔒 Lock User')
 button4 = types.KeyboardButton('🔐 Lock Expired')  
 button5 = types.KeyboardButton('🔓 Unlock User')
-button6 = types.KeyboardButton('⌛ Update Expire')
-button7 = types.KeyboardButton('⚙️  Update User')
+button6 = types.KeyboardButton('⌛ Update Expiration')
+button7 = types.KeyboardButton('⚙️ Update User')
 button8 = types.KeyboardButton('🔄 Renew User')
 button9 = types.KeyboardButton('🔍 Search User')
 button10 = types.KeyboardButton('🧑 Online Users')
@@ -60,12 +64,15 @@ button15 = types.KeyboardButton('📄 Ocpasswd Backup')
 button16 = types.KeyboardButton('⚡ Restart Bot')
 button17 = types.KeyboardButton('❓ Help')
 button18 = types.KeyboardButton('👋 Exit')
-
-# Create a keyboard with the menu buttons
-menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
-menu.add(button1,button2,button3,button4,button5,button6,button7,button8,button9,
+menu_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+menu_keyboard.add(button1,button2,button3,button4,button5,button6,button7,button8,button9,
          button10,button11,button12,button13,button14,button15,button16,button17,
          button18)
+
+# Set up the Cancel keyboard
+cancel_button = types.KeyboardButton('🚫 Cancel')
+cancel_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+cancel_keyboard.add(cancel_button)
 
 
 # Command: /start
@@ -74,15 +81,15 @@ def start(message):
 
   bot.send_message(
     message.chat.id,
-    "Welcome to AliNet Bot!",
+    "Welcome to AliNet Bot!😉 Touch Start to get started.",
     reply_markup=start_keyboard
   )
 
 @bot.message_handler(func=lambda msg: msg.text == "🏁 START")  
 def show_menu(message):
 
-  bot.send_message(message.chat.id, "Choose option:",  
-                    reply_markup=menu)
+  bot.send_message(message.chat.id, "Choose an Option:",  
+                    reply_markup=menu_keyboard)
 
 
 # Decorator function to check user authorization
@@ -92,24 +99,21 @@ def authorized_only(func):
         if str(message.chat.id) in AUTHORIZED_CHAT_IDS:
             return func(message, *args, **kwargs)
         else:
-            bot.send_message(message.chat.id, "You are not authorized to access this command.")
+            bot.send_message(message.chat.id, "⛔ Access denied ⛔")
     return wrapper
 
-
-add_user_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-add_user_keyboard.add('Cancel')
 
 # Command: /adduser
 @bot.message_handler(func=lambda message: message.text == "🙋 Add User")
 @authorized_only
 def add_user(message):
-    msg = bot.send_message(message.chat.id, "Enter username",  
-                         reply_markup=add_user_keyboard)
+    msg = bot.send_message(message.chat.id, "Enter the Username:",  
+                         reply_markup=cancel_keyboard)
     bot.register_next_step_handler(msg, process_username_step)
     
 def process_username_step(message):
-    if message.text == "Cancel":  
-     bot.send_message(message.chat.id, "Canceled", reply_markup=menu)
+    if message.text == "🚫 Cancel":  
+     bot.send_message(message.chat.id, "Add User Operation Canceled!", reply_markup=menu_keyboard)
      return
 
     username = message.text.lower()
@@ -121,17 +125,17 @@ def process_username_step(message):
     result = cursor.fetchone()
 
     if result[0] > 0:
-        bot.send_message(message.chat.id, "User already exists.", reply_markup=menu)
+        bot.send_message(message.chat.id, "User already exists. Choose another username.", reply_markup=menu_keyboard)
         return
 
     # Continue with the process if the username is unique
-    msg = bot.send_message(message.chat.id, "Enter the password:")
+    msg = bot.send_message(message.chat.id, "Enter the Password:")
     bot.register_next_step_handler(msg, process_password_step, username)
 
 def process_password_step(message, username):
-    if message.text.lower() == "cancel":
-        bot.send_message(message.chat.id, "Add user operation canceled.")
-        return
+    if message.text == "🚫 Cancel":  
+     bot.send_message(message.chat.id, "Add User Operation Canceled!", reply_markup=menu_keyboard)
+     return
 
     password = message.text
 
@@ -139,9 +143,9 @@ def process_password_step(message, username):
     bot.register_next_step_handler(msg, process_days_or_date_step, username, password)
 
 def process_days_or_date_step(message, username, password):
-    if message.text.lower() == "cancel":
-        bot.send_message(message.chat.id, "Add user operation canceled.")
-        return
+    if message.text == "🚫 Cancel":  
+     bot.send_message(message.chat.id, "Add User Operation Canceled!", reply_markup=menu_keyboard)
+     return
 
     input_text = message.text.strip()
 
@@ -176,14 +180,16 @@ def process_days_or_date_step(message, username, password):
     cursor.execute(query, values)
     db.commit()
 
-    bot.send_message(message.chat.id, "User added successfully!")
+    bot.send_message(message.chat.id, "✅ User Added Successfully!",  
+                   reply_markup=menu_keyboard)
+
 
 
 # Command: /deluser
-@bot.message_handler(commands=['deluser'])
+@bot.message_handler(func=lambda message: message.text == "😔 Delete User")
 @authorized_only
 def del_user(message):
-    msg = bot.send_message(message.chat.id, "Enter the username (type 'cancel' to abort):")
+    msg = bot.send_message(message.chat.id, "Enter the Username:")
     bot.register_next_step_handler(msg, process_deluser_step)
     
 def process_deluser_step(message):
