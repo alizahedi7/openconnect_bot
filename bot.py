@@ -113,7 +113,7 @@ def add_user(message):
     
 def process_username_step(message):
     if message.text == "🚫 Cancel":  
-     bot.send_message(message.chat.id, "Add User Operation Canceled!", reply_markup=menu_keyboard)
+     bot.send_message(message.chat.id, "🚫 Add User Operation Canceled!", reply_markup=menu_keyboard)
      return
 
     username = message.text.lower()
@@ -125,7 +125,7 @@ def process_username_step(message):
     result = cursor.fetchone()
 
     if result[0] > 0:
-        bot.send_message(message.chat.id, "User already exists. Choose another username.", reply_markup=menu_keyboard)
+        bot.send_message(message.chat.id, "🚫 User already exists. Choose another username.", reply_markup=menu_keyboard)
         return
 
     # Continue with the process if the username is unique
@@ -134,7 +134,7 @@ def process_username_step(message):
 
 def process_password_step(message, username):
     if message.text == "🚫 Cancel":  
-     bot.send_message(message.chat.id, "Add User Operation Canceled!", reply_markup=menu_keyboard)
+     bot.send_message(message.chat.id, "🚫 Add User Operation Canceled!", reply_markup=menu_keyboard)
      return
 
     password = message.text
@@ -144,7 +144,7 @@ def process_password_step(message, username):
 
 def process_days_or_date_step(message, username, password):
     if message.text == "🚫 Cancel":  
-     bot.send_message(message.chat.id, "Add User Operation Canceled!", reply_markup=menu_keyboard)
+     bot.send_message(message.chat.id, "🚫 Add User Operation Canceled!", reply_markup=menu_keyboard)
      return
 
     input_text = message.text.strip()
@@ -152,7 +152,7 @@ def process_days_or_date_step(message, username, password):
     try:
         days = int(input_text)
         if days < 0:
-            bot.send_message(message.chat.id, "Number of days cannot be negative. Please enter a non-negative value.")
+            bot.send_message(message.chat.id, "🚫 Number of days cannot be negative. Please enter a non-negative value.")
             return
 
         expire_datetime = datetime.now() + timedelta(days=days)
@@ -160,10 +160,10 @@ def process_days_or_date_step(message, username, password):
         try:
             expire_datetime = datetime.strptime(input_text, '%Y-%m-%d')
             if expire_datetime < datetime.now():
-                bot.send_message(message.chat.id, "Entered date is in the past. Please enter a future date.")
+                bot.send_message(message.chat.id, "🚫 Entered date is in the past. Please enter a future date.")
                 return
         except ValueError:
-            bot.send_message(message.chat.id, "Invalid input. Please enter either a number of days or a date in YYYY-MM-DD format.")
+            bot.send_message(message.chat.id, "🚫 Invalid input. Please enter either a number of days or a date in YYYY-MM-DD format.")
             return
 
     start_date = datetime.now().strftime('%Y-%m-%d')
@@ -191,7 +191,6 @@ def process_days_or_date_step(message, username, password):
                             reply_markup=menu_keyboard)
 
 
-
 # Command: /deluser
 @bot.message_handler(func=lambda message: message.text == "😔 Delete User")
 @authorized_only
@@ -202,7 +201,7 @@ def del_user(message):
     
 def process_deluser_step(message):
     if message.text == "🚫 Cancel":  
-     bot.send_message(message.chat.id, "User Deletion Operation Canceled!", reply_markup=menu_keyboard)
+     bot.send_message(message.chat.id, "🚫 User Deletion Operation Canceled!", reply_markup=menu_keyboard)
      return
 
     username = message.text.lower()
@@ -214,7 +213,7 @@ def process_deluser_step(message):
     user_count = cursor.fetchone()[0]
 
     if user_count == 0:
-        bot.send_message(message.chat.id, "User does not exist.", reply_markup=menu_keyboard)
+        bot.send_message(message.chat.id, "🚫 User does not exist.", reply_markup=menu_keyboard)
     else:
         # Remove the user from ocserv
         subprocess.run(['sudo', 'ocpasswd', '-d', username])
@@ -225,8 +224,11 @@ def process_deluser_step(message):
         cursor.execute(query_delete, values_delete)
         db.commit()
 
-        bot.send_message(message.chat.id, "✅ User Deleted Successfully!",  
-                   reply_markup=menu_keyboard)
+        bold_username = f"<b>\"{username}\"</b>"
+        bot.send_message(message.chat.id, 
+                        f"✅ User {bold_username} Deleted Successfully!",
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=menu_keyboard)
 
 
 # Command: /lockuser
