@@ -417,7 +417,9 @@ def online_users(message):
         since = row[since_index]
 
         user_info = (
-            f"<b>{index}</b>- 👤: <b>{user}</b>, ⏳: <b>{since}</b>\n"
+            f"<b>{index}</b>-" 
+            f"👤: <b>{user}</b>," 
+            f"⏳: <b>{since}</b>\n"
             "- - - - - - - - - - - - - - - - -\n"
         )
 
