@@ -409,7 +409,7 @@ def online_users(message):
     num_online_users = len(data)  # Get the total number of online users
 
     max_message_length = 4096  # Maximum message length supported by Telegram
-    chunk = f"🟢 <b>Online Users ({num_online_users})b>\\ 🟢"
+    chunk = f"🟢 <b>Online Users ({num_online_users})</b> 🟢\n"
     chunk += "- - - - - - - - - - - - - - - - -\n"
 
     for index, row in enumerate(data, start=1):
@@ -417,9 +417,7 @@ def online_users(message):
         since = row[since_index]
 
         user_info = (
-            f"<b>{index}</b>-" 
-            f"👤: <b>{user}</b>," 
-            f"⏳: <b>{since}</b>\n"
+            f"<b>{index}</b>- 👤: <b>{user}</b> ⏳: <b>{since}</b>\n"
             "- - - - - - - - - - - - - - - - -\n"
         )
 
