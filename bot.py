@@ -516,6 +516,7 @@ def process_searchuser_step(message):
             "🚫 Search Operation Canceled!",
             reply_markup=menu_keyboard,
         )
+        return
 
     username = message.text
 
@@ -564,6 +565,7 @@ def process_update_username_step(message):
             "🚫 Update Operation Canceled!",
             reply_markup=menu_keyboard,
         )
+        return
 
     username = message.text.lower()
 
@@ -588,6 +590,7 @@ def process_update_password_step(message, username):
             "🚫 Update Operation Canceled!",
             reply_markup=menu_keyboard,
         )
+        return
 
     new_password = message.text
 
@@ -606,6 +609,7 @@ def process_update_days_or_date_step(message, username, new_password):
             "🚫 Update Operation Canceled!",
             reply_markup=menu_keyboard,
         )
+        return
 
     input_text = message.text.strip()
 
@@ -685,6 +689,7 @@ def process_update_username_step(message):
             "🚫 Update Expiration Operation Canceled!",
             reply_markup=menu_keyboard,
         )
+        return
 
     username = message.text.lower()
 
@@ -713,6 +718,7 @@ def process_update_days_or_date_step(message, username):
             "🚫 Update Expiration Operation Canceled!",
             reply_markup=menu_keyboard,
         )
+        return
 
     input_text = message.text.strip()
 
@@ -782,6 +788,7 @@ def process_renew_username_step(message):
             "🚫 Renewing Operation Canceled!",
             reply_markup=menu_keyboard,
         )
+        return
 
     username = message.text.lower()
 
@@ -809,6 +816,7 @@ def process_renew_days_or_date_step(message, username):
             "🚫 Renewing Operation Canceled!",
             reply_markup=menu_keyboard,
         )
+        return
 
     input_value = message.text.strip()
 
@@ -891,6 +899,7 @@ def process_renew_date_step(message, username, date_str):
                     reply_markup=menu_keyboard,
                 )
             return
+        
     except ValueError:
         bot.send_message(
             message.chat.id, "🚫 Invalid date format. Please use YYYY-MM-DD format.",
@@ -1072,8 +1081,8 @@ def lock_expired_users(message=None):
         bot.send_message(message.chat.id, f"🔒 Locked Users in {current_date} 🔒\n{locked_users_message}")
 
     else:
+        
         # This is the scheduled task version
-
         chat_id = CHANNEL_ID
         # Get the current date
         current_date = datetime.now().strftime("%Y-%m-%d")
