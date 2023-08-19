@@ -760,6 +760,7 @@ def process_update_days_or_date_step(message, username):
     bot.send_message(
         message.chat.id,
         f"✅ Expiration Date for user {bold_username} Updated Successfully to {bold_expire}! ✅",
+        parse_mode=ParseMode.HTML,
         reply_markup=menu_keyboard
     )
 
@@ -871,10 +872,12 @@ def process_renew_days_step(message, username, days):
         bot.send_message(
             message.chat.id,
             f"✅ Expiration Date for user {bold_username} Renewed Successfully to {bold_expire} and user Unlocked! ✅",
+            parse_mode=ParseMode.HTML,
             reply_markup=menu_keyboard
         )
     else:
         bot.send_message(message.chat.id, f"✅ Expiration Date for user {bold_username} Renewed Successfully to {bold_expire}! ✅",
+        parse_mode=ParseMode.HTML,
         reply_markup=menu_keyboard)
 
 
@@ -914,10 +917,12 @@ def process_renew_date_step(message, username, date_str):
         bot.send_message(
             message.chat.id,
             f"✅ Expiration Date for user {bold_username} Renewed Successfully to {bold_expire} and user Unlocked! ✅",
+            parse_mode=ParseMode.HTML,
             reply_markup=menu_keyboard
         )
     else:
         bot.send_message(message.chat.id, f"✅ Expiration Date for user {bold_username} Renewed Successfully to {bold_expire}! ✅",
+        parse_mode=ParseMode.HTML,
         reply_markup=menu_keyboard)
 
 
