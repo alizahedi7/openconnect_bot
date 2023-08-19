@@ -695,7 +695,7 @@ def process_update_username_step(message):
     result = cursor.fetchone()
 
     if result[0] == 0:
-        bot.send_message(message.chat.id, "🚫 User does not exist.")
+        bot.send_message(message.chat.id, "🚫 User does not exist.", reply_markup=menu_keyboard)
         return
 
     # Continue with the process if the username exists
@@ -792,7 +792,7 @@ def process_renew_username_step(message):
     result = cursor.fetchone()
 
     if result[0] == 0:
-        bot.send_message(message.chat.id, "User does not exist.")
+        bot.send_message(message.chat.id, "🚫 User does not exist.", reply_markup=menu_keyboard)
         return
 
     msg = bot.send_message(
