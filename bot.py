@@ -545,7 +545,7 @@ def process_searchuser_step(message):
     else:
         response = "🚫 User not found!"
 
-    bot.send_message(message.chat.id, response, reply_markup=menu_keyboard)
+    bot.send_message(message.chat.id, response, parse_mode=ParseMode.HTML, reply_markup=menu_keyboard)
 
 
 # Command: /updateuser
