@@ -1037,6 +1037,10 @@ def inactive_users(message):
 # Command: /lockexpiredusers
 @bot.message_handler(func=lambda message: message.text == "🔐 Lock Expired")
 @authorized_only
+def lock_expired_command(message):
+    lock_expired_users(message)
+
+
 def lock_expired_users(message=None):
     if message:
         # This is the message handler version
@@ -1131,6 +1135,9 @@ def lock_expired_users(message=None):
 # Command: /backupdb
 @bot.message_handler(func=lambda message: message.text == "📦 DB Backup")
 @authorized_only
+def backup_command(message):
+    backup_mysql_db(message)
+
 def backup_mysql_db(message=None):
     if message:
         # This is the message handler version
@@ -1199,6 +1206,9 @@ def backup_mysql_db(message=None):
 # Command: /exportocpasswd
 @bot.message_handler(func=lambda message: message.text == "📄 Ocpasswd Backup")
 @authorized_only
+def export_command(message):
+    export_ocpasswd(message)
+
 def export_ocpasswd(message=None):
     try:
         if message:
