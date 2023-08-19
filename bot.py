@@ -314,7 +314,7 @@ def process_unlockuser_step(message):
 
 
 # Command: /onlineusers
-@bot.message_handler(commands=['onlineusers'])
+@bot.message_handler(func=lambda message: message.text == "🧑 Online Users")
 @authorized_only
 def online_users(message):
     output = subprocess.check_output(['sudo', 'occtl', 'show', 'users']).decode('utf-8')
@@ -330,11 +330,9 @@ def online_users(message):
     
     num_online_users = len(data)  # Get the total number of online users
     
-    response = f"Online Users ({num_online_users}):\n"
-    response += "- - - - - - - - - - - - - - - - -\n"
-    
     max_message_length = 4096  # Maximum message length supported by Telegram
-    chunk = ""  # Initialize an empty chunk
+    chunk = f"Online Users ({num_online_users})🧑\n"
+    chunk += "- - - - - - - - - - - - - - - - -\n"
     
     for index, row in enumerate(data, start=1):
         user = row[user_index]
