@@ -52,7 +52,7 @@ button6 = types.KeyboardButton("⌛ Update Expiration")
 button7 = types.KeyboardButton("⚙️ Update User")
 button8 = types.KeyboardButton("🔄 Renew User")
 button9 = types.KeyboardButton("🔍 Search User")
-button10 = types.KeyboardButton("🟢 OnlUsers")
+button10 = types.KeyboardButton("🟢 Online Users")
 button11 = types.KeyboardButton("📋 All Users")
 button12 = types.KeyboardButton("✅ Active Users")
 button13 = types.KeyboardButton("❌ Inactive Users")
@@ -1250,10 +1250,10 @@ def help_command(message):
     "⚙️ Update User - Modify other user details like password, date etc.\n"  
     "🔄 Renew User - Extend a user's access by resetting expiration\n"  
     "🔍 Search User - Find a user by name\n"  
-    "🧑 Online Users - See currently logged in users\n"  
+    "🟢 Online Users - See currently logged in users\n"  
     "📋 All Users - View full list of all users\n"
-    "🟢 Active Users - See users with active (non-expired) access\n"
-    "🔴 Inactive Users - See users with expired or inactive access\n"  
+    "✅ Active Users - See users with active (non-expired) access\n"
+    "❌ Inactive Users - See users with expired or inactive access\n"  
     "📦 DB Backup - Create a backup of the database\n"  
     "📄 Ocpasswd Backup - Backup OpenConnect password file\n"  
     "⚡ Restart Bot - Restart the Telegram bot service\n"  
@@ -1298,4 +1298,3 @@ bot_thread.start()
 while True:
     schedule.run_pending()
     time.sleep(1)
-    
