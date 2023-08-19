@@ -538,7 +538,7 @@ def process_searchuser_step(message):
             f"🔑: <b>{user[2]}</b>\n"
             f"⏩: <b>{start_date}</b>\n"
             f"🔚: <b>{expire_date}</b>\n"
-            f"⏳: <b>{remaining_days}</b>"
+            f"⏳: <b>{remaining_days}</b>\n"
             f" Status: "
             f"{ '✅' if user[5]=='active' else '❌'}\n"
         )
