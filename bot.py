@@ -11,7 +11,7 @@ import threading
 from dotenv import load_dotenv
 import functools
 from telebot import types
-from telegram import ParseMode
+from telegram.constants import ParseMode
 
 # Load environment variables from .env file
 load_dotenv()
