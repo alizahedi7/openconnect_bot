@@ -46,21 +46,22 @@ start_keyboard.add(start_button)
 button1 = types.KeyboardButton("🙋 Add User")
 button2 = types.KeyboardButton("😔 Delete User")
 button3 = types.KeyboardButton("🔒 Lock User")
-button4 = types.KeyboardButton("🔐 Lock Expired")
-button5 = types.KeyboardButton("🔓 Unlock User")
-button6 = types.KeyboardButton("⌛ Update Expiration")
-button7 = types.KeyboardButton("⚙️ Update User")
-button8 = types.KeyboardButton("🔄 Renew User")
-button9 = types.KeyboardButton("🔍 Search User")
-button10 = types.KeyboardButton("🟢 Online Users")
-button11 = types.KeyboardButton("📋 All Users")
-button12 = types.KeyboardButton("✅ Active Users")
-button13 = types.KeyboardButton("❌ Inactive Users")
-button14 = types.KeyboardButton("📦 DB Backup")
-button15 = types.KeyboardButton("📄 Ocpasswd Backup")
-button16 = types.KeyboardButton("⚡ Restart Bot")
-button17 = types.KeyboardButton("❓ Help")
-button18 = types.KeyboardButton("👋 Exit")
+button4 = types.KeyboardButton("🛑 Disconnect User")
+button5 = types.KeyboardButton("🔐 Lock Expired")
+button6 = types.KeyboardButton("🔓 Unlock User")
+button7 = types.KeyboardButton("🟢 Online Users")
+button8 = types.KeyboardButton("⌛ Update Expiration")
+button9 = types.KeyboardButton("⚙️ Update User")
+button10 = types.KeyboardButton("🔄 Renew User")
+button11 = types.KeyboardButton("🔍 Search User")
+button12 = types.KeyboardButton("📋 All Users")
+button13 = types.KeyboardButton("✅ Active Users")
+button14 = types.KeyboardButton("❌ Inactive Users")
+button15 = types.KeyboardButton("📦 DB Backup")
+button16 = types.KeyboardButton("📄 Ocpasswd Backup")
+button17 = types.KeyboardButton("⚡ Restart Bot")
+button18 = types.KeyboardButton("❓ Help")
+button19 = types.KeyboardButton("👋 Exit")
 menu_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 menu_keyboard.add(
     button1,
@@ -81,6 +82,7 @@ menu_keyboard.add(
     button16,
     button17,
     button18,
+    button19,
 )
 
 # Set up the Cancel keyboard
@@ -117,6 +119,7 @@ def authorized_only(func):
 
 
 # Command: /adduser
+@bot.message_handler(commands=['adduser'])
 @bot.message_handler(func=lambda message: message.text == "🙋 Add User")
 @authorized_only
 def add_user(message):
@@ -245,6 +248,7 @@ def process_days_or_date_step(message, username, password):
 
 
 # Command: /deluser
+@bot.message_handler(commands=['deluser'])
 @bot.message_handler(func=lambda message: message.text == "😔 Delete User")
 @authorized_only
 def del_user(message):
@@ -295,6 +299,7 @@ def process_deluser_step(message):
 
 
 # Command: /lockuser
+@bot.message_handler(commands=['lockuser'])
 @bot.message_handler(func=lambda message: message.text == "🔒 Lock User")
 @authorized_only
 def lock_user(message):
@@ -345,6 +350,7 @@ def process_lockuser_step(message):
 
 
 # Command: /unlockuser
+@bot.message_handler(commands=['unlockuser'])
 @bot.message_handler(func=lambda message: message.text == "🔓 Unlock User")
 @authorized_only
 def unlock_user(message):
@@ -392,6 +398,7 @@ def process_unlockuser_step(message):
 
 
 # Command: /onlineusers
+@bot.message_handler(commands=['onlineusers'])
 @bot.message_handler(func=lambda message: message.text == "🟢 Online Users")
 @authorized_only
 def online_users(message):
@@ -447,6 +454,7 @@ def online_users(message):
 
 
 # Command: /allusers
+@bot.message_handler(commands=['allusers'])
 @bot.message_handler(func=lambda message: message.text == "📋 All Users")
 @authorized_only
 def all_users(message):
@@ -550,6 +558,7 @@ def process_searchuser_step(message):
 
 
 # Command: /updateuser
+@bot.message_handler(commands=['updateuser'])
 @bot.message_handler(func=lambda message: message.text == "⚙️ Update User")
 @authorized_only
 def update_user(message):
@@ -673,6 +682,7 @@ def process_update_days_or_date_step(message, username, new_password):
 
 
 # Command: /updateexpiration
+@bot.message_handler(commands=['updateexpiration'])
 @bot.message_handler(func=lambda message: message.text == "⌛ Update Expiration")
 @authorized_only
 def update_expiration_date(message):
@@ -772,6 +782,7 @@ def process_update_days_or_date_step(message, username):
 
 
 # Command: /renewuser
+@bot.message_handler(commands=['renewuser'])
 @bot.message_handler(func=lambda message: message.text == "🔄 Renew User")
 @authorized_only
 def renew_user(message):
@@ -936,6 +947,7 @@ def process_renew_date_step(message, username, date_str):
 
 
 # Command: /activeusers
+@bot.message_handler(commands=['activeusers'])
 @bot.message_handler(func=lambda message: message.text == "✅ Active Users")
 @authorized_only
 def active_users(message):
@@ -986,6 +998,7 @@ def active_users(message):
 
 
 # Command: /inactiveusers
+@bot.message_handler(commands=['inactiveusers'])
 @bot.message_handler(func=lambda message: message.text == "❌ Inactive Users")
 @authorized_only
 def inactive_users(message):
@@ -1035,6 +1048,7 @@ def inactive_users(message):
         bot.send_message(message.chat.id, chunk, parse_mode=ParseMode.HTML, reply_markup=menu_keyboard)
 
 # Command: /lockexpiredusers
+@bot.message_handler(commands=['lockexpiredusers'])
 @bot.message_handler(func=lambda message: message.text == "🔐 Lock Expired")
 @authorized_only
 def lock_expired_command(message):
@@ -1131,8 +1145,34 @@ def lock_expired_users(message=None):
             chat_id, f"🔒 Scheduled Locked Expired Users in {current_date} 🔒\n{locked_users_message}"
         )
 
+# Command: /disconnectuser 
+@bot.message_handler(commands=['disconnectuser'])
+@bot.message_handler(func=lambda message: message.text == "🛑 Disconnect User")
+def disconnect_by_username_command(message):
+    chat_id = message.chat.id
+    msg = bot.send_message(chat_id, "Enter the username of the user to disconnect:", reply_markup=cancel_keyboard)
+
+    bot.register_next_step_handler(msg, process_disconnect_username_step)
+
+def process_disconnect_username_step(message):
+    if message.text == "🚫 Cancel":
+        bot.send_message(
+            message.chat.id,
+            "🚫 Disconnecting Operation Canceled!",
+            reply_markup=menu_keyboard,
+        )
+        return
+    chat_id = message.chat.id
+    username = message.text.lower()
+
+    try:
+        subprocess.run(['sudo', 'occtl', 'disconnect', 'user', username], check=True)
+        bot.send_message(chat_id, f"User '{username}' has been disconnected from ocserv.", reply_markup=menu_keyboard)
+    except subprocess.CalledProcessError:
+        bot.send_message(chat_id, f"Failed to disconnect user '{username}' from ocserv.", reply_markup=menu_keyboard)
 
 # Command: /backupdb
+@bot.message_handler(commands=['backupdb'])
 @bot.message_handler(func=lambda message: message.text == "📦 DB Backup")
 @authorized_only
 def backup_command(message):
@@ -1204,6 +1244,7 @@ def backup_mysql_db(message=None):
 
 
 # Command: /exportocpasswd
+@bot.message_handler(commands=['exportocpasswd'])
 @bot.message_handler(func=lambda message: message.text == "📄 Ocpasswd Backup")
 @authorized_only
 def export_command(message):
@@ -1246,7 +1287,8 @@ def export_ocpasswd(message=None):
         bot.send_message(chat_id, f"An error occurred: {str(e)}")
 
 
-# Command: /restartalinet
+# Command: /restart
+@bot.message_handler(commands=['restart'])
 @bot.message_handler(func=lambda message: message.text == "⚡ Restart Bot")
 @authorized_only
 def restart_alinet(message):
@@ -1257,7 +1299,8 @@ def restart_alinet(message):
 
     bot.send_message(chat_id, "AliNet Bot Service has been Restarted.⚡")
 
-
+# Command: /help
+@bot.message_handler(commands=['help'])
 @bot.message_handler(func=lambda message: message.text == "❓ Help") 
 def help_command(message):
 
@@ -1287,7 +1330,8 @@ def help_command(message):
 
   bot.send_message(chat_id, help_text, parse_mode=ParseMode.MARKDOWN)
 
-
+# Command: /exit
+@bot.message_handler(commands=['exit'])
 @bot.message_handler(func=lambda message: message.text == "👋 Exit")
 def exit_menu(message):
 
