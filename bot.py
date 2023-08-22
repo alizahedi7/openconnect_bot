@@ -47,21 +47,22 @@ button1 = types.KeyboardButton("🙋 Add User")
 button2 = types.KeyboardButton("😔 Delete User")
 button3 = types.KeyboardButton("🔒 Lock User")
 button4 = types.KeyboardButton("🛑 Disconnect User")
-button5 = types.KeyboardButton("🔐 Lock Expired")
-button6 = types.KeyboardButton("🔓 Unlock User")
-button7 = types.KeyboardButton("🟢 Online Users")
-button8 = types.KeyboardButton("⌛ Update Expiration")
-button9 = types.KeyboardButton("⚙️ Update User")
-button10 = types.KeyboardButton("🔄 Renew User")
-button11 = types.KeyboardButton("🔍 Search User")
-button12 = types.KeyboardButton("📋 All Users")
-button13 = types.KeyboardButton("✅ Active Users")
-button14 = types.KeyboardButton("❌ Inactive Users")
-button15 = types.KeyboardButton("📦 DB Backup")
-button16 = types.KeyboardButton("📄 Ocpasswd Backup")
-button17 = types.KeyboardButton("⚡ Restart Bot")
-button18 = types.KeyboardButton("❓ Help")
-button19 = types.KeyboardButton("👋 Exit")
+button5 = types.KeyboardButton("🛑 Disconnect pre-auth Users")
+button6 = types.KeyboardButton("🔐 Lock Expired")
+button7 = types.KeyboardButton("🔓 Unlock User")
+button8 = types.KeyboardButton("🟢 Online Users")
+button9 = types.KeyboardButton("⌛ Update Expiration")
+button10 = types.KeyboardButton("⚙️ Update User")
+button11 = types.KeyboardButton("🔄 Renew User")
+button12 = types.KeyboardButton("🔍 Search User")
+button13 = types.KeyboardButton("📋 All Users")
+button14 = types.KeyboardButton("✅ Active Users")
+button15 = types.KeyboardButton("❌ Inactive Users")
+button16 = types.KeyboardButton("📦 DB Backup")
+button17 = types.KeyboardButton("📄 Ocpasswd Backup")
+button18 = types.KeyboardButton("⚡ Restart Bot")
+button19 = types.KeyboardButton("❓ Help")
+button20 = types.KeyboardButton("👋 Exit")
 menu_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 menu_keyboard.add(
     button1,
@@ -83,6 +84,7 @@ menu_keyboard.add(
     button17,
     button18,
     button19,
+    button20,
 )
 
 # Set up the Cancel keyboard
@@ -409,9 +411,10 @@ def online_users(message):
     headers = lines[0].split()
     data = [line.split() for line in lines[1:]]
 
-    # Find the indices of the 'user' and 'since' columns
+    # Find the indices of the 'id', 'user' and 'since' columns
     user_index = headers.index("user")
     since_index = headers.index("since")
+    id_index = headers.index("id")
 
     num_online_users = len(data)  # Get the total number of online users
 
@@ -422,9 +425,10 @@ def online_users(message):
     for index, row in enumerate(data, start=1):
         user = row[user_index]
         since = row[since_index]
+        id = row[id_index]
 
         user_info = (
-            f"<b>{index}</b>- 👤: <b>{user}</b> ⏳: <b>{since}</b>\n"
+                f"<b>{index}</b>- 🆔: <b>{id}</b> 👤: <b>{user}</b> ⏳: <b>{since}</b>\n"
             "- - - - - - - - - - - - - - - - -\n"
         )
 
@@ -1286,6 +1290,41 @@ def export_ocpasswd(message=None):
     except Exception as e:
         chat_id = CHANNEL_ID  # Replace with the desired chat or channel ID
         bot.send_message(chat_id, f"An error occurred: {str(e)}")
+
+
+# Command: /disconnectpreauth
+@bot.message_handler(commands=['disconnectpreauth'])
+@bot.message_handler(func=lambda message: message.text == "🛑 Disconnect pre-auth Users")
+@authorized_only
+def disconnect_command(message):
+    disconnect_pre_auth_users(message)
+
+def disconnect_pre_auth_users(message):
+    chat_id = message.chat.id
+
+    try:
+        output = subprocess.check_output(['sudo', 'occtl', 'show', 'users']).decode('utf-8')
+        lines = output.strip().split('\n')
+        pre_auth_user_ids = []
+         
+        for line in lines[1:]:
+            fields = line.split()
+            if fields[6] == 'pre-auth':
+                pre_auth_user_ids.append(fields[0])
+        
+        if not pre_auth_user_ids:
+            bot.send_message(chat_id, "No users with 'pre-auth' status found.")
+            return
+
+        for user_id in pre_auth_user_ids:
+            try:
+                subprocess.run(['sudo', 'occtl', 'disconnect', 'id', user_id], check=True)
+                bot.send_message(chat_id, f"Disconnected user with ID {user_id}")
+            except subprocess.CalledProcessError:
+                bot.send_message(chat_id, f"Failed to disconnect user with ID {user_id}")
+
+    except subprocess.CalledProcessError as e:
+        bot.send_message(chat_id, f"Error while getting user information: {e}")
 
 
 # Command: /restart
