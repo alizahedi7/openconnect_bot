@@ -121,7 +121,7 @@ def authorized_only(func):
 
 
 # Command: /adduser
-@bot.message_handler(commands=['adduser'])
+@bot.message_handler(commands=["adduser"])
 @bot.message_handler(func=lambda message: message.text == "🙋 Add User")
 @authorized_only
 def add_user(message):
@@ -250,7 +250,7 @@ def process_days_or_date_step(message, username, password):
 
 
 # Command: /deluser
-@bot.message_handler(commands=['deluser'])
+@bot.message_handler(commands=["deluser"])
 @bot.message_handler(func=lambda message: message.text == "😔 Delete User")
 @authorized_only
 def del_user(message):
@@ -301,7 +301,7 @@ def process_deluser_step(message):
 
 
 # Command: /lockuser
-@bot.message_handler(commands=['lockuser'])
+@bot.message_handler(commands=["lockuser"])
 @bot.message_handler(func=lambda message: message.text == "🔒 Lock User")
 @authorized_only
 def lock_user(message):
@@ -309,6 +309,7 @@ def lock_user(message):
         message.chat.id, "Enter the Username:", reply_markup=cancel_keyboard
     )
     bot.register_next_step_handler(msg, process_lockuser_step)
+
 
 def process_lockuser_step(message):
     if message.text == "🚫 Cancel":
@@ -352,7 +353,7 @@ def process_lockuser_step(message):
 
 
 # Command: /unlockuser
-@bot.message_handler(commands=['unlockuser'])
+@bot.message_handler(commands=["unlockuser"])
 @bot.message_handler(func=lambda message: message.text == "🔓 Unlock User")
 @authorized_only
 def unlock_user(message):
@@ -360,6 +361,7 @@ def unlock_user(message):
         message.chat.id, "Enter the Username:", reply_markup=cancel_keyboard
     )
     bot.register_next_step_handler(msg, process_unlockuser_step)
+
 
 def process_unlockuser_step(message):
     if message.text == "🚫 Cancel":
@@ -400,7 +402,7 @@ def process_unlockuser_step(message):
 
 
 # Command: /onlineusers
-@bot.message_handler(commands=['onlineusers'])
+@bot.message_handler(commands=["onlineusers"])
 @bot.message_handler(func=lambda message: message.text == "🟢 Online Users")
 @authorized_only
 def online_users(message):
@@ -428,7 +430,7 @@ def online_users(message):
         id = row[id_index]
 
         user_info = (
-                f"<b>{index}</b>- 🆔: <b>{id}</b> 👤: <b>{user}</b> ⏳: <b>{since}</b>\n"
+            f"<b>{index}</b>- 🆔: <b>{id}</b> 👤: <b>{user}</b> ⏳: <b>{since}</b>\n"
             "- - - - - - - - - - - - - - - - -\n"
         )
 
@@ -458,7 +460,7 @@ def online_users(message):
 
 
 # Command: /allusers
-@bot.message_handler(commands=['allusers'])
+@bot.message_handler(commands=["allusers"])
 @bot.message_handler(func=lambda message: message.text == "📋 All Users")
 @authorized_only
 def all_users(message):
@@ -495,7 +497,12 @@ def all_users(message):
         # Check if adding the user_info to the current chunk exceeds the message length limit
         if len(chunk) + len(user_info) > max_message_length:
             # Send the current chunk as a message
-            bot.send_message(message.chat.id, chunk, parse_mode=ParseMode.HTML, reply_markup=menu_keyboard)
+            bot.send_message(
+                message.chat.id,
+                chunk,
+                parse_mode=ParseMode.HTML,
+                reply_markup=menu_keyboard,
+            )
             # Reset the chunk
             chunk = ""
 
@@ -520,6 +527,7 @@ def search_user(message):
         message.chat.id, "Enter the Username:", reply_markup=cancel_keyboard
     )
     bot.register_next_step_handler(msg, process_searchuser_step)
+
 
 def process_searchuser_step(message):
     if message.text == "🚫 Cancel":
@@ -558,11 +566,13 @@ def process_searchuser_step(message):
     else:
         response = "🚫 User not found!"
 
-    bot.send_message(message.chat.id, response, parse_mode=ParseMode.HTML, reply_markup=menu_keyboard)
+    bot.send_message(
+        message.chat.id, response, parse_mode=ParseMode.HTML, reply_markup=menu_keyboard
+    )
 
 
 # Command: /updateuser
-@bot.message_handler(commands=['updateuser'])
+@bot.message_handler(commands=["updateuser"])
 @bot.message_handler(func=lambda message: message.text == "⚙️ Update User")
 @authorized_only
 def update_user(message):
@@ -570,6 +580,7 @@ def update_user(message):
         message.chat.id, "Enter the Username:", reply_markup=cancel_keyboard
     )
     bot.register_next_step_handler(msg, process_update_username_step)
+
 
 def process_update_username_step(message):
     if message.text == "🚫 Cancel":
@@ -596,6 +607,7 @@ def process_update_username_step(message):
     msg = bot.send_message(message.chat.id, "Enter the New password:")
     bot.register_next_step_handler(msg, process_update_password_step, username)
 
+
 def process_update_password_step(message, username):
     if message.text == "🚫 Cancel":
         bot.send_message(
@@ -614,6 +626,7 @@ def process_update_password_step(message, username):
     bot.register_next_step_handler(
         msg, process_update_days_or_date_step, username, new_password
     )
+
 
 def process_update_days_or_date_step(message, username, new_password):
     if message.text == "🚫 Cancel":
@@ -635,9 +648,9 @@ def process_update_days_or_date_step(message, username, new_password):
                 reply_markup=menu_keyboard,
             )
             return
-        
+
         new_expire_datetime = datetime.now() + timedelta(days=days)
-    
+
     except ValueError:
         try:
             new_expire_datetime = datetime.strptime(input_text, "%Y-%m-%d")
@@ -648,7 +661,7 @@ def process_update_days_or_date_step(message, username, new_password):
                     reply_markup=menu_keyboard,
                 )
                 return
-        
+
         except ValueError:
             bot.send_message(
                 message.chat.id,
@@ -686,7 +699,7 @@ def process_update_days_or_date_step(message, username, new_password):
 
 
 # Command: /updateexpiration
-@bot.message_handler(commands=['updateexpiration'])
+@bot.message_handler(commands=["updateexpiration"])
 @bot.message_handler(func=lambda message: message.text == "⌛ Update Expiration")
 @authorized_only
 def update_expiration_date(message):
@@ -714,7 +727,9 @@ def process_update_username_step(message):
     result = cursor.fetchone()
 
     if result[0] == 0:
-        bot.send_message(message.chat.id, "🚫 User does not exist.", reply_markup=menu_keyboard)
+        bot.send_message(
+            message.chat.id, "🚫 User does not exist.", reply_markup=menu_keyboard
+        )
         return
 
     # Continue with the process if the username exists
@@ -747,7 +762,7 @@ def process_update_days_or_date_step(message, username):
             return
 
         new_expire_datetime = datetime.now() + timedelta(days=days)
-    
+
     except ValueError:
         try:
             new_expire_datetime = datetime.strptime(input_text, "%Y-%m-%d")
@@ -758,7 +773,7 @@ def process_update_days_or_date_step(message, username):
                     reply_markup=menu_keyboard,
                 )
                 return
-        
+
         except ValueError:
             bot.send_message(
                 message.chat.id,
@@ -781,12 +796,12 @@ def process_update_days_or_date_step(message, username):
         message.chat.id,
         f"✅ Expiration Date for user {bold_username} Updated Successfully to {bold_expire}! ✅",
         parse_mode=ParseMode.HTML,
-        reply_markup=menu_keyboard
+        reply_markup=menu_keyboard,
     )
 
 
 # Command: /renewuser
-@bot.message_handler(commands=['renewuser'])
+@bot.message_handler(commands=["renewuser"])
 @bot.message_handler(func=lambda message: message.text == "🔄 Renew User")
 @authorized_only
 def renew_user(message):
@@ -814,7 +829,9 @@ def process_renew_username_step(message):
     result = cursor.fetchone()
 
     if result[0] == 0:
-        bot.send_message(message.chat.id, "🚫 User does not exist.", reply_markup=menu_keyboard)
+        bot.send_message(
+            message.chat.id, "🚫 User does not exist.", reply_markup=menu_keyboard
+        )
         return
 
     msg = bot.send_message(
@@ -854,12 +871,12 @@ def unlock_user(username):
 
 def process_renew_days_step(message, username, days):
     if days < 0 or days >= 365:
-            bot.send_message(
-                message.chat.id,
-                "🚫 Number of days cannot be negative or too much big. Please enter a rational value.",
-                reply_markup=menu_keyboard,
-            )
-            return
+        bot.send_message(
+            message.chat.id,
+            "🚫 Number of days cannot be negative or too much big. Please enter a rational value.",
+            reply_markup=menu_keyboard,
+        )
+        return
 
     # Get the current expire date
     query = "SELECT expire_date FROM users WHERE username = %s"
@@ -891,17 +908,20 @@ def process_renew_days_step(message, username, days):
     bold_expire = f'<b>"{new_expire_date}"</b>'
     if user_status == "deactive":
         unlock_user(username)
-        
+
         bot.send_message(
             message.chat.id,
             f"✅ Expiration Date for user {bold_username} Renewed Successfully to {bold_expire} and user Unlocked! ✅",
             parse_mode=ParseMode.HTML,
-            reply_markup=menu_keyboard
+            reply_markup=menu_keyboard,
         )
     else:
-        bot.send_message(message.chat.id, f"✅ Expiration Date for user {bold_username} Renewed Successfully to {bold_expire}! ✅",
-        parse_mode=ParseMode.HTML,
-        reply_markup=menu_keyboard)
+        bot.send_message(
+            message.chat.id,
+            f"✅ Expiration Date for user {bold_username} Renewed Successfully to {bold_expire}! ✅",
+            parse_mode=ParseMode.HTML,
+            reply_markup=menu_keyboard,
+        )
 
 
 def process_renew_date_step(message, username, date_str):
@@ -909,15 +929,16 @@ def process_renew_date_step(message, username, date_str):
         new_expire_date = datetime.strptime(date_str, "%Y-%m-%d").date()
         if new_expire_date < datetime.now().date():
             bot.send_message(
-                    message.chat.id,
-                    "🚫 Entered date is in the past. Please enter a future date.",
-                    reply_markup=menu_keyboard,
-                )
+                message.chat.id,
+                "🚫 Entered date is in the past. Please enter a future date.",
+                reply_markup=menu_keyboard,
+            )
             return
-        
+
     except ValueError:
         bot.send_message(
-            message.chat.id, "🚫 Invalid date format. Please use YYYY-MM-DD format.",
+            message.chat.id,
+            "🚫 Invalid date format. Please use YYYY-MM-DD format.",
             reply_markup=menu_keyboard,
         )
         return
@@ -937,21 +958,24 @@ def process_renew_date_step(message, username, date_str):
     bold_expire = f'<b>"{new_expire_date}"</b>'
     if user_status == "deactive":
         unlock_user(username)
-        
+
         bot.send_message(
             message.chat.id,
             f"✅ Expiration Date for user {bold_username} Renewed Successfully to {bold_expire} and user Unlocked! ✅",
             parse_mode=ParseMode.HTML,
-            reply_markup=menu_keyboard
+            reply_markup=menu_keyboard,
         )
     else:
-        bot.send_message(message.chat.id, f"✅ Expiration Date for user {bold_username} Renewed Successfully to {bold_expire}! ✅",
-        parse_mode=ParseMode.HTML,
-        reply_markup=menu_keyboard)
+        bot.send_message(
+            message.chat.id,
+            f"✅ Expiration Date for user {bold_username} Renewed Successfully to {bold_expire}! ✅",
+            parse_mode=ParseMode.HTML,
+            reply_markup=menu_keyboard,
+        )
 
 
 # Command: /activeusers
-@bot.message_handler(commands=['activeusers'])
+@bot.message_handler(commands=["activeusers"])
 @bot.message_handler(func=lambda message: message.text == "✅ Active Users")
 @authorized_only
 def active_users(message):
@@ -966,7 +990,7 @@ def active_users(message):
         return
 
     number_of_active_users = len(active_users_data)
-    
+
     max_message_length = 4096  # Maximum message length supported by Telegram
     chunk = f"✅ <b>Active Users ({number_of_active_users})</b> ✅\n"
     chunk += "- - - - - - - - - - - - - - - - -\n"
@@ -989,7 +1013,12 @@ def active_users(message):
         # Check if adding the user_info to the current chunk exceeds the message length limit
         if len(chunk) + len(user_info) > max_message_length:
             # Send the current chunk as a message
-            bot.send_message(message.chat.id, chunk, parse_mode=ParseMode.HTML, reply_markup=menu_keyboard)
+            bot.send_message(
+                message.chat.id,
+                chunk,
+                parse_mode=ParseMode.HTML,
+                reply_markup=menu_keyboard,
+            )
             # Reset the chunk
             chunk = ""
 
@@ -998,11 +1027,16 @@ def active_users(message):
 
     # Send the remaining chunk as a message (if not empty)
     if chunk:
-        bot.send_message(message.chat.id, chunk, parse_mode=ParseMode.HTML, reply_markup=menu_keyboard)
+        bot.send_message(
+            message.chat.id,
+            chunk,
+            parse_mode=ParseMode.HTML,
+            reply_markup=menu_keyboard,
+        )
 
 
 # Command: /inactiveusers
-@bot.message_handler(commands=['inactiveusers'])
+@bot.message_handler(commands=["inactiveusers"])
 @bot.message_handler(func=lambda message: message.text == "❌ Inactive Users")
 @authorized_only
 def inactive_users(message):
@@ -1017,11 +1051,11 @@ def inactive_users(message):
         return
 
     number_of_inactive_users = len(inactive_users_data)
-    
+
     max_message_length = 4096  # Maximum message length supported by Telegram
     chunk = f"❌ <b>InActive Users ({number_of_inactive_users})</b> ❌\n"
     chunk += "- - - - - - - - - - - - - - - - -\n"
-    
+
     for index, user in enumerate(inactive_users_data, start=1):
         username = user[0]
         expire_date = user[2].strftime("%Y-%m-%d")
@@ -1040,7 +1074,12 @@ def inactive_users(message):
         # Check if adding the user_info to the current chunk exceeds the message length limit
         if len(chunk) + len(user_info) > max_message_length:
             # Send the current chunk as a message
-            bot.send_message(message.chat.id, chunk, parse_mode=ParseMode.HTML, reply_markup=menu_keyboard)
+            bot.send_message(
+                message.chat.id,
+                chunk,
+                parse_mode=ParseMode.HTML,
+                reply_markup=menu_keyboard,
+            )
             # Reset the chunk
             chunk = ""
 
@@ -1049,10 +1088,16 @@ def inactive_users(message):
 
     # Send the remaining chunk as a message (if not empty)
     if chunk:
-        bot.send_message(message.chat.id, chunk, parse_mode=ParseMode.HTML, reply_markup=menu_keyboard)
+        bot.send_message(
+            message.chat.id,
+            chunk,
+            parse_mode=ParseMode.HTML,
+            reply_markup=menu_keyboard,
+        )
+
 
 # Command: /lockexpiredusers
-@bot.message_handler(commands=['lockexpiredusers'])
+@bot.message_handler(commands=["lockexpiredusers"])
 @bot.message_handler(func=lambda message: message.text == "🔐 Lock Expired")
 @authorized_only
 def lock_expired_command(message):
@@ -1075,7 +1120,9 @@ def lock_expired_users(message=None):
 
         # Check if there are expired users
         if len(expired_users) == 0:
-            bot.send_message(message.chat.id, "There are no Expired and Active users Today.")
+            bot.send_message(
+                message.chat.id, "There are no Expired and Active users Today."
+            )
             return
 
         # Lock the expired users
@@ -1100,10 +1147,12 @@ def lock_expired_users(message=None):
 
         # Send a message to the bot indicating the locked users
         locked_users_message = "\n".join(locked_users)
-        bot.send_message(message.chat.id, f"🔒 Locked Users in {current_date} 🔒\n{locked_users_message}")
+        bot.send_message(
+            message.chat.id,
+            f"🔒 Locked Users in {current_date} 🔒\n{locked_users_message}",
+        )
 
     else:
-        
         # This is the scheduled task version
         chat_id = CHANNEL_ID
         # Get the current date
@@ -1146,18 +1195,25 @@ def lock_expired_users(message=None):
         locked_users_message = "\n".join(locked_users)
 
         bot.send_message(
-            chat_id, f"🔒 Scheduled Locked Expired Users in {current_date} 🔒\n{locked_users_message}"
+            chat_id,
+            f"🔒 Scheduled Locked Expired Users in {current_date} 🔒\n{locked_users_message}",
         )
 
-# Command: /disconnectuser 
-@bot.message_handler(commands=['disconnectuser'])
+
+# Command: /disconnectuser
+@bot.message_handler(commands=["disconnectuser"])
 @bot.message_handler(func=lambda message: message.text == "🛑 Disconnect User")
 @authorized_only
 def disconnect_by_username_command(message):
     chat_id = message.chat.id
-    msg = bot.send_message(chat_id, "Enter the username of the user to disconnect:", reply_markup=cancel_keyboard)
+    msg = bot.send_message(
+        chat_id,
+        "Enter the username of the user to disconnect:",
+        reply_markup=cancel_keyboard,
+    )
 
     bot.register_next_step_handler(msg, process_disconnect_username_step)
+
 
 def process_disconnect_username_step(message):
     if message.text == "🚫 Cancel":
@@ -1171,17 +1227,27 @@ def process_disconnect_username_step(message):
     username = message.text.lower()
 
     try:
-        subprocess.run(['sudo', 'occtl', 'disconnect', 'user', username], check=True)
-        bot.send_message(chat_id, f"User '{username}' has been disconnected from ocserv.", reply_markup=menu_keyboard)
+        subprocess.run(["sudo", "occtl", "disconnect", "user", username], check=True)
+        bot.send_message(
+            chat_id,
+            f"User '{username}' has been disconnected from ocserv.",
+            reply_markup=menu_keyboard,
+        )
     except subprocess.CalledProcessError:
-        bot.send_message(chat_id, f"Failed to disconnect user '{username}' from ocserv.", reply_markup=menu_keyboard)
+        bot.send_message(
+            chat_id,
+            f"Failed to disconnect user '{username}' from ocserv.",
+            reply_markup=menu_keyboard,
+        )
+
 
 # Command: /backupdb
-@bot.message_handler(commands=['backupdb'])
+@bot.message_handler(commands=["backupdb"])
 @bot.message_handler(func=lambda message: message.text == "📦 DB Backup")
 @authorized_only
 def backup_command(message):
     backup_mysql_db(message)
+
 
 def backup_mysql_db(message=None):
     if message:
@@ -1249,11 +1315,12 @@ def backup_mysql_db(message=None):
 
 
 # Command: /exportocpasswd
-@bot.message_handler(commands=['exportocpasswd'])
+@bot.message_handler(commands=["exportocpasswd"])
 @bot.message_handler(func=lambda message: message.text == "📄 Ocpasswd Backup")
 @authorized_only
 def export_command(message):
     export_ocpasswd(message)
+
 
 def export_ocpasswd(message=None):
     try:
@@ -1293,42 +1360,85 @@ def export_ocpasswd(message=None):
 
 
 # Command: /disconnectpreauth
-@bot.message_handler(commands=['disconnectpreauth'])
+@bot.message_handler(commands=["disconnectpreauth"])
 @bot.message_handler(func=lambda message: message.text == "🛑 Disconnect pre-auth Users")
 @authorized_only
 def disconnect_command(message):
     disconnect_pre_auth_users(message)
 
+
 def disconnect_pre_auth_users(message):
-    chat_id = message.chat.id
+    if message:
+        # This is the message handler version
+        chat_id = message.chat.id
 
-    try:
-        output = subprocess.check_output(['sudo', 'occtl', 'show', 'users']).decode('utf-8')
-        lines = output.strip().split('\n')
-        pre_auth_user_ids = []
-         
-        for line in lines[1:]:
-            fields = line.split()
-            if fields[6] == 'pre-auth':
-                pre_auth_user_ids.append(fields[0])
+        try:
+            output = subprocess.check_output(["sudo", "occtl", "show", "users"]).decode(
+                "utf-8"
+            )
+            lines = output.strip().split("\n")
+            pre_auth_user_ids = []
+
+            for line in lines[1:]:
+                fields = line.split()
+                if fields[6] == "pre-auth":
+                    pre_auth_user_ids.append(fields[0])
+
+            if not pre_auth_user_ids:
+                bot.send_message(chat_id, "No users with 'pre-auth' status found.")
+                return
+
+            for user_id in pre_auth_user_ids:
+                try:
+                    subprocess.run(
+                        ["sudo", "occtl", "disconnect", "id", user_id], check=True
+                    )
+                    bot.send_message(chat_id, f"Disconnected user with ID {user_id}")
+                except subprocess.CalledProcessError:
+                    bot.send_message(
+                        chat_id, f"Failed to disconnect user with ID {user_id}"
+                    )
+
+        except subprocess.CalledProcessError as e:
+            bot.send_message(chat_id, f"Error while getting user information: {e}")
+    
+    else:
         
-        if not pre_auth_user_ids:
-            bot.send_message(chat_id, "No users with 'pre-auth' status found.")
-            return
+        # This is the scheduled task version
+        chat_id = CHANNEL_ID
+        try:
+            output = subprocess.check_output(["sudo", "occtl", "show", "users"]).decode(
+                "utf-8"
+            )
+            lines = output.strip().split("\n")
+            pre_auth_user_ids = []
 
-        for user_id in pre_auth_user_ids:
-            try:
-                subprocess.run(['sudo', 'occtl', 'disconnect', 'id', user_id], check=True)
-                bot.send_message(chat_id, f"Disconnected user with ID {user_id}")
-            except subprocess.CalledProcessError:
-                bot.send_message(chat_id, f"Failed to disconnect user with ID {user_id}")
+            for line in lines[1:]:
+                fields = line.split()
+                if fields[6] == "pre-auth":
+                    pre_auth_user_ids.append(fields[0])
 
-    except subprocess.CalledProcessError as e:
-        bot.send_message(chat_id, f"Error while getting user information: {e}")
+            if not pre_auth_user_ids:
+                bot.send_message(chat_id, "No users with 'pre-auth' status found.")
+                return
+
+            for user_id in pre_auth_user_ids:
+                try:
+                    subprocess.run(
+                        ["sudo", "occtl", "disconnect", "id", user_id], check=True
+                    )
+                    bot.send_message(chat_id, f"Disconnected user with ID {user_id}")
+                except subprocess.CalledProcessError:
+                    bot.send_message(
+                        chat_id, f"Failed to disconnect user with ID {user_id}"
+                    )
+
+        except subprocess.CalledProcessError as e:
+            bot.send_message(chat_id, f"Error while getting user information: {e}")
 
 
 # Command: /restart
-@bot.message_handler(commands=['restart'])
+@bot.message_handler(commands=["restart"])
 @bot.message_handler(func=lambda message: message.text == "⚡ Restart Bot")
 @authorized_only
 def restart_alinet(message):
@@ -1339,45 +1449,49 @@ def restart_alinet(message):
 
     bot.send_message(chat_id, "AliNet Bot Service has been Restarted.⚡")
 
+
 # Command: /help
-@bot.message_handler(commands=['help'])
-@bot.message_handler(func=lambda message: message.text == "❓ Help") 
+@bot.message_handler(commands=["help"])
+@bot.message_handler(func=lambda message: message.text == "❓ Help")
 def help_command(message):
+    chat_id = message.chat.id
 
-  chat_id = message.chat.id
+    help_text = (
+        "Here are the available commands:\n\n"
+        "🙋 Add User - Add a new user to the system\n"
+        "😔 Delete User - Remove an existing user from the system\n"
+        "🔒 Lock User - Lock a user's access preventing login\n"
+        "🔐 Lock Expired - Lock all expired user accounts\n"
+        "🔓 Unlock User - Unlock a previously locked user's access\n"
+        "⌛ Update Expiration - Change a user's expiration date\n"
+        "⚙️ Update User - Modify other user details like password, date etc.\n"
+        "🔄 Renew User - Extend a user's access by resetting expiration\n"
+        "🔍 Search User - Find a user by name\n"
+        "🟢 Online Users - See currently logged in users\n"
+        "📋 All Users - View full list of all users\n"
+        "✅ Active Users - See users with active (non-expired) access\n"
+        "❌ Inactive Users - See users with expired or inactive access\n"
+        "📦 DB Backup - Create a backup of the database\n"
+        "📄 Ocpasswd Backup - Backup OpenConnect password file\n"
+        "⚡ Restart Bot - Restart the Telegram bot service\n"
+        "❓ Help - Display this help text\n"
+        "👋 Exit - Exit the menu\n"
+    )
 
-  help_text = (
-    "Here are the available commands:\n\n"
-    "🙋 Add User - Add a new user to the system\n"
-    "😔 Delete User - Remove an existing user from the system\n"  
-    "🔒 Lock User - Lock a user's access preventing login\n"  
-    "🔐 Lock Expired - Lock all expired user accounts\n"  
-    "🔓 Unlock User - Unlock a previously locked user's access\n"  
-    "⌛ Update Expiration - Change a user's expiration date\n"  
-    "⚙️ Update User - Modify other user details like password, date etc.\n"  
-    "🔄 Renew User - Extend a user's access by resetting expiration\n"  
-    "🔍 Search User - Find a user by name\n"  
-    "🟢 Online Users - See currently logged in users\n"  
-    "📋 All Users - View full list of all users\n"
-    "✅ Active Users - See users with active (non-expired) access\n"
-    "❌ Inactive Users - See users with expired or inactive access\n"  
-    "📦 DB Backup - Create a backup of the database\n"  
-    "📄 Ocpasswd Backup - Backup OpenConnect password file\n"  
-    "⚡ Restart Bot - Restart the Telegram bot service\n"  
-    "❓ Help - Display this help text\n"  
-    "👋 Exit - Exit the menu\n"  
-  )
+    bot.send_message(chat_id, help_text, parse_mode=ParseMode.MARKDOWN)
 
-  bot.send_message(chat_id, help_text, parse_mode=ParseMode.MARKDOWN)
 
 # Command: /exit
-@bot.message_handler(commands=['exit'])
+@bot.message_handler(commands=["exit"])
 @bot.message_handler(func=lambda message: message.text == "👋 Exit")
 def exit_menu(message):
+    chat_id = message.chat.id
 
-  chat_id = message.chat.id
-
-  bot.send_message(chat_id, "Thank you for using the AliNet Bot! Exiting...", reply_markup=start_keyboard)
+    bot.send_message(
+        chat_id,
+        "Thank you for using the AliNet Bot! Exiting...",
+        reply_markup=start_keyboard,
+    )
 
 
 # Schedule the lock_expired_users, export_ocpasswd and backup_mysql_db functions to run every day at a specific time (e.g., 00:00)
@@ -1390,6 +1504,9 @@ schedule.every().day.at("22:30").do(
 schedule.every().day.at("22:31").do(
     lambda: backup_mysql_db()
 )  # 2:01 a.m in Tehran Timezone
+
+# Schedule the disconnect_pre_auth_users function to run every 30 seconds
+schedule.every(30).seconds.do(lambda: disconnect_pre_auth_users())
 
 
 # Function to run the bot's polling loop
