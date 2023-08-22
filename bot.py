@@ -58,7 +58,7 @@ button12 = types.KeyboardButton("🔍 Search User")
 button13 = types.KeyboardButton("📋 All Users")
 button14 = types.KeyboardButton("✅ Active Users")
 button15 = types.KeyboardButton("❌ Inactive Users")
-button16 = types.KeyboardButton("🕒 Expired Today")
+button16 = types.KeyboardButton("🕒 Expiring Users")
 button17 = types.KeyboardButton("📦 DB Backup")
 button18 = types.KeyboardButton("📄 Ocpasswd Backup")
 button19 = types.KeyboardButton("⚡ Restart Bot")
@@ -1437,33 +1437,43 @@ def disconnect_pre_auth_users(message=None):
         except subprocess.CalledProcessError as e:
             bot.send_message(chat_id, f"Error while getting user information: {e}")
 
-@bot.message_handler(commands=["expiredtoday"])
-@bot.message_handler(func=lambda message: message.text == "🕒 Expired Today")
-@authorized_only
-def expired_today_users(message):
-    query = (
-        "SELECT username, expire_date FROM users WHERE status = 'deactive' AND expire_date = CURDATE()"
-    )
-    cursor.execute(query)
-    expired_today_users_data = cursor.fetchall()
 
-    if not expired_today_users_data:
-        bot.send_message(message.chat.id, "No users with today's expiration date found.")
+# Command: /expiringusers
+@bot.message_handler(commands=["expiringusers"])
+@bot.message_handler(func=lambda message: message.text == "🕒 Expiring Users")
+@authorized_only
+def expiring_users(message):
+    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow_date = tomorrow.date()
+
+    query = (
+        "SELECT username, start_date, expire_date FROM users WHERE status = 'active' AND expire_date = %s"
+    )
+    cursor.execute(query, (tomorrow_date,))
+    expiring_users_data = cursor.fetchall()
+
+    if not expiring_users_data:
+        bot.send_message(message.chat.id, "No expiring users found for tomorrow.")
         return
 
-    number_of_expired_today_users = len(expired_today_users_data)
+    number_of_expiring_users = len(expiring_users_data)
 
     max_message_length = 4096  # Maximum message length supported by Telegram
-    chunk = f"🕒 <b>Users Expired Today ({number_of_expired_today_users})</b> 🕒\n"
+    chunk = f"🕒 <b>Expiring Users for Tomorrow ({number_of_expiring_users})</b> 🕒\n"
     chunk += "- - - - - - - - - - - - - - - - -\n"
 
-    for index, user in enumerate(expired_today_users_data, start=1):
+    for index, user in enumerate(expiring_users_data, start=1):
         username = user[0]
-        expire_date = user[1].strftime("%Y-%m-%d")
+        expire_date = user[2].strftime("%Y-%m-%d")
+
+        remaining_days = max(
+            (datetime.strptime(expire_date, "%Y-%m-%d") - datetime.now()).days, 0
+        )
 
         user_info = (
             f"<b>{index}</b>- 👤: <b>{username}</b>\n"
             f" 📅: <b>{expire_date}</b>\n"
+            f" ⏳: <b>{remaining_days}</b>\n"
             "- - - - - - - - - - - - - - - - -\n"
         )
 
