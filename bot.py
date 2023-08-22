@@ -1419,7 +1419,7 @@ def disconnect_pre_auth_users(message=None):
                     pre_auth_user_ids.append(fields[0])
 
             if not pre_auth_user_ids:
-                bot.send_message(chat_id, "No users with 'pre-auth' status found.")
+                # bot.send_message(chat_id, "No users with 'pre-auth' status found.")
                 return
 
             for user_id in pre_auth_user_ids:
@@ -1427,7 +1427,7 @@ def disconnect_pre_auth_users(message=None):
                     subprocess.run(
                         ["sudo", "occtl", "disconnect", "id", user_id], check=True
                     )
-                    bot.send_message(chat_id, f"Disconnected user with ID {user_id}")
+                    # bot.send_message(chat_id, f"Disconnected user with ID {user_id}")
                 except subprocess.CalledProcessError:
                     bot.send_message(
                         chat_id, f"Failed to disconnect user with ID {user_id}"
