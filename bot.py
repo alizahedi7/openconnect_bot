@@ -1367,7 +1367,7 @@ def disconnect_command(message):
     disconnect_pre_auth_users(message)
 
 
-def disconnect_pre_auth_users(message):
+def disconnect_pre_auth_users(message=None):
     if message:
         # This is the message handler version
         chat_id = message.chat.id
@@ -1505,8 +1505,8 @@ schedule.every().day.at("22:31").do(
     lambda: backup_mysql_db()
 )  # 2:01 a.m in Tehran Timezone
 
-# Schedule the disconnect_pre_auth_users function to run every 30 seconds
-schedule.every(30).seconds.do(lambda: disconnect_pre_auth_users())
+# Schedule the disconnect_pre_auth_users function to run every 20 seconds
+schedule.every(20).seconds.do(lambda: disconnect_pre_auth_users())
 
 
 # Function to run the bot's polling loop
