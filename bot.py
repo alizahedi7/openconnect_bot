@@ -58,11 +58,12 @@ button12 = types.KeyboardButton("🔍 Search User")
 button13 = types.KeyboardButton("📋 All Users")
 button14 = types.KeyboardButton("✅ Active Users")
 button15 = types.KeyboardButton("❌ Inactive Users")
-button16 = types.KeyboardButton("📦 DB Backup")
-button17 = types.KeyboardButton("📄 Ocpasswd Backup")
-button18 = types.KeyboardButton("⚡ Restart Bot")
-button19 = types.KeyboardButton("❓ Help")
-button20 = types.KeyboardButton("👋 Exit")
+button16 = types.KeyboardButton("🕒 Expired Today")
+button17 = types.KeyboardButton("📦 DB Backup")
+button18 = types.KeyboardButton("📄 Ocpasswd Backup")
+button19 = types.KeyboardButton("⚡ Restart Bot")
+button20 = types.KeyboardButton("❓ Help")
+button21 = types.KeyboardButton("👋 Exit")
 menu_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 menu_keyboard.add(
     button1,
@@ -1435,6 +1436,60 @@ def disconnect_pre_auth_users(message=None):
 
         except subprocess.CalledProcessError as e:
             bot.send_message(chat_id, f"Error while getting user information: {e}")
+
+@bot.message_handler(commands=["expiredtoday"])
+@bot.message_handler(func=lambda message: message.text == "🕒 Expired Today")
+@authorized_only
+def expired_today_users(message):
+    query = (
+        "SELECT username, expire_date FROM users WHERE status = 'deactive' AND expire_date = CURDATE()"
+    )
+    cursor.execute(query)
+    expired_today_users_data = cursor.fetchall()
+
+    if not expired_today_users_data:
+        bot.send_message(message.chat.id, "No users with today's expiration date found.")
+        return
+
+    number_of_expired_today_users = len(expired_today_users_data)
+
+    max_message_length = 4096  # Maximum message length supported by Telegram
+    chunk = f"🕒 <b>Users Expired Today ({number_of_expired_today_users})</b> 🕒\n"
+    chunk += "- - - - - - - - - - - - - - - - -\n"
+
+    for index, user in enumerate(expired_today_users_data, start=1):
+        username = user[0]
+        expire_date = user[1].strftime("%Y-%m-%d")
+
+        user_info = (
+            f"<b>{index}</b>- 👤: <b>{username}</b>\n"
+            f" 📅: <b>{expire_date}</b>\n"
+            "- - - - - - - - - - - - - - - - -\n"
+        )
+
+        # Check if adding the user_info to the current chunk exceeds the message length limit
+        if len(chunk) + len(user_info) > max_message_length:
+            # Send the current chunk as a message
+            bot.send_message(
+                message.chat.id,
+                chunk,
+                parse_mode=ParseMode.HTML,
+                reply_markup=menu_keyboard,
+            )
+            # Reset the chunk
+            chunk = ""
+
+        # Add the user_info to the current chunk
+        chunk += user_info
+
+    # Send the remaining chunk as a message (if not empty)
+    if chunk:
+        bot.send_message(
+            message.chat.id,
+            chunk,
+            parse_mode=ParseMode.HTML,
+            reply_markup=menu_keyboard,
+        )
 
 
 # Command: /restart
