@@ -1148,6 +1148,7 @@ def lock_expired_users(message=None):
 # Command: /disconnectuser 
 @bot.message_handler(commands=['disconnectuser'])
 @bot.message_handler(func=lambda message: message.text == "🛑 Disconnect User")
+@authorized_only
 def disconnect_by_username_command(message):
     chat_id = message.chat.id
     msg = bot.send_message(chat_id, "Enter the username of the user to disconnect:", reply_markup=cancel_keyboard)
