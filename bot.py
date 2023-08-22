@@ -1402,9 +1402,8 @@ def disconnect_pre_auth_users(message=None):
 
         except subprocess.CalledProcessError as e:
             bot.send_message(chat_id, f"Error while getting user information: {e}")
-    
+
     else:
-        
         # This is the scheduled task version
         chat_id = CHANNEL_ID
         try:
@@ -1446,9 +1445,7 @@ def expiring_users(message):
     tomorrow = datetime.now() + timedelta(days=1)
     tomorrow_date = tomorrow.date()
 
-    query = (
-        "SELECT username, start_date, expire_date FROM users WHERE status = 'active' AND expire_date = %s"
-    )
+    query = "SELECT username, start_date, expire_date FROM users WHERE status = 'active' AND expire_date = %s"
     cursor.execute(query, (tomorrow_date,))
     expiring_users_data = cursor.fetchall()
 
