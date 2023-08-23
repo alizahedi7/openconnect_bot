@@ -86,6 +86,7 @@ menu_keyboard.add(
     button18,
     button19,
     button20,
+    button21,
 )
 
 # Set up the Cancel keyboard
