@@ -1269,7 +1269,7 @@ def backup_mysql_db(message=None):
 
         with open(backup_file, "wb") as f:
             process = subprocess.Popen(
-                ["mysqldump", "-u", "ali", "--password=8540", "alidb"],
+                ["mysqldump", "-u", DB_USER, f"--password={DB_PASSWORD}", DB_NAME],
                 stdout=f,
                 cwd=working_directory,
             )
@@ -1300,7 +1300,7 @@ def backup_mysql_db(message=None):
 
         with open(backup_file, "wb") as f:
             process = subprocess.Popen(
-                ["mysqldump", "-u", "ali", "--password=8540", "alidb"],
+                ["mysqldump", "-u", DB_USER, f"--password={DB_PASSWORD}", DB_NAME],
                 stdout=f,
                 cwd=working_directory,
             )
