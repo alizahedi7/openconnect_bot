@@ -409,6 +409,9 @@ def process_unlockuser_step(message):
 @authorized_only
 def online_users(message):
     output = subprocess.check_output(["sudo", "occtl", "show", "users"]).decode("utf-8")
+    if len(output) == 0:
+          bot.send_message(message.chat.id, "There is no Online Users!")
+          return
 
     # Parse the output and extract user and since information
     lines = output.strip().split("\n")
@@ -1378,6 +1381,10 @@ def disconnect_pre_auth_users(message=None):
             output = subprocess.check_output(["sudo", "occtl", "show", "users"]).decode(
                 "utf-8"
             )
+            if len(output) == 0:
+                bot.send_message(message.chat.id, "There is no Online Users!")
+                return
+            
             lines = output.strip().split("\n")
             pre_auth_user_ids = []
 
@@ -1411,6 +1418,9 @@ def disconnect_pre_auth_users(message=None):
             output = subprocess.check_output(["sudo", "occtl", "show", "users"]).decode(
                 "utf-8"
             )
+            if len(output) == 0:
+                return
+
             lines = output.strip().split("\n")
             pre_auth_user_ids = []
 
