@@ -1579,7 +1579,7 @@ schedule.every().day.at("01:31").do(
 )  # 2:01 a.m in Tehran Timezone
 
 # Schedule the disconnect_pre_auth_users function to run every 20 seconds
-schedule.every(20).seconds.do(lambda: disconnect_pre_auth_users())
+schedule.every(60).seconds.do(lambda: disconnect_pre_auth_users())
 
 
 # Function to run the bot's polling loop
