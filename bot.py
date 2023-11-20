@@ -1568,15 +1568,15 @@ def exit_menu(message):
 
 
 # Schedule the lock_expired_users, export_ocpasswd and backup_mysql_db functions to run every day at a specific time (e.g., 00:00)
-schedule.every().day.at("05:00").do(
+schedule.every().day.at("04:00").do(
     lambda: lock_expired_users()
 )  # 5:30 a.m in Tehran Timezone
-schedule.every().day.at("01:30").do(
+schedule.every().day.at("04:02").do(
     lambda: export_ocpasswd()
-)  # 2:00 a.m in Tehran Timezone
-schedule.every().day.at("01:31").do(
+)  # 5:32 a.m in Tehran Timezone
+schedule.every().day.at("04:04").do(
     lambda: backup_mysql_db()
-)  # 2:01 a.m in Tehran Timezone
+)  # 5:34 a.m in Tehran Timezone
 
 # Schedule the disconnect_pre_auth_users function to run every 20 seconds
 schedule.every(60).seconds.do(lambda: disconnect_pre_auth_users())
